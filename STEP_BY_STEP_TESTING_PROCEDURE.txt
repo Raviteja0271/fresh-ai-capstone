@@ -1,0 +1,442 @@
+================================================================================
+FRESH AI: INTELLIGENT PHISHING DETECTION AND SECURE COMMUNICATION FRAMEWORK
+FINAL-YEAR CAPSTONE PROJECT - STEP-BY-STEP TESTING PROCEDURE AND DEMO GUIDE
+================================================================================
+Project Title : Fresh AI-Assisted Phishing Email Detection and Secure Communication Framework
+Application   : FRESH AI
+Architecture  : React (Vite) + Python (Flask REST API) + SQLite (SQLAlchemy) + Scikit-Learn
+Localhost URL : Frontend: http://localhost:5173 | Backend: http://localhost:5000
+Default Admin : Username: admin | Password: Admin@FreshAI2026
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+1. System Startup & Login Instructions
+2. Module 1: Email Dataset Preparation & Feature Extraction
+3. Module 2: Intelligent Phishing Classification & Model Performance
+4. Module 3: Sender Authentication & PGP Cryptography
+   - Part A: Sender Authentication Analysis
+   - Part B: PGP Secure Communication & Cryptographic Integrity
+5. Module 4: Threat Explanation & Alert Dashboard
+6. System Shutdown Instructions
+
+================================================================================
+1. SYSTEM STARTUP & LOGIN INSTRUCTIONS
+================================================================================
+STEP 1:
+Open the project root directory:
+"d:\College\SLOT C - 5111\Capstone\Project\"
+
+STEP 2:
+Double-click the file named:
+"start_project.bat"
+
+OBSERVATION:
+Three windows will initialize:
+1. Application Launcher window (performs environment checks).
+2. Backend API window (running Flask on http://localhost:5000).
+3. Frontend UI window (running React Vite on http://localhost:5173).
+Your default browser will automatically open to http://localhost:5173.
+
+STEP 3:
+On the Login Page, enter the demonstration credentials:
+- Username: admin
+- Password: Admin@FreshAI2026
+Click "Sign In to Security Dashboard".
+
+EXPECTED RESULT:
+You are authenticated via signed JWT token and redirected to the Main Dashboard.
+
+================================================================================
+2. MODULE 1: EMAIL DATASET PREPARATION & FEATURE EXTRACTION
+================================================================================
+PURPOSE:
+Demonstrates CSV dataset ingestion, text preprocessing (HTML stripping, URL tokenization),
+interactive column mapping, vocabulary feature extraction, and demonstration data loading.
+
+--------------------------------------------------------------------------------
+TEST 1.1: INSPECT CURRENT DATASET TELEMETRY & PREVIEW
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Dataset Management" in the left sidebar.
+2. Observe the four summary cards at the top.
+
+EXPECTED OUTPUT:
+- Total Emails in Dataset: 112
+- Phishing Examples     : 56 (50% of dataset)
+- Legitimate Examples   : 56 (50% of dataset)
+- Extracted Features    : 3,000 TF-IDF n-gram tokens (unigrams + bigrams)
+- Active Dataset Records Preview: Displays rows with sanitized text and labels.
+
+--------------------------------------------------------------------------------
+TEST 1.2: TEST CUSTOM CSV UPLOAD WITH COLUMN MAPPING
+--------------------------------------------------------------------------------
+PURPOSE:
+Proves the system can ingest external datasets where column headers are NOT standard
+"email_text" and "label".
+
+PROCEDURE:
+1. On your desktop, create a text file named "custom_emails.csv".
+2. Paste the following 3 lines inside it and save:
+
+body_content,target_category
+"Dear customer, your bank account is suspended. Verify credentials at http://bank-verify.xyz immediately.",phishing
+"Hi team, attached is the presentation deck for the client demo tomorrow morning.",legitimate
+
+3. In FRESH AI, on the "Dataset Management" page, scroll to "Upload & Ingest Custom Email Dataset".
+4. Click "Select CSV File" and choose "custom_emails.csv".
+5. The "Map Dataset Columns" modal will automatically appear on screen.
+6. In the modal, select:
+   - Email Text Column        : body_content
+   - Email Label / Target Col : target_category
+7. Click "Confirm Column Mapping".
+
+EXPECTED OUTPUT:
+- Success message: "Dataset custom_emails.csv uploaded and registered successfully."
+- Total records updates to 2 (1 Phishing, 1 Legitimate).
+- The preview table now shows your newly uploaded rows.
+
+--------------------------------------------------------------------------------
+TEST 1.3: RESTORE DEMONSTRATION SYNTHETIC DATASET
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. On the "Dataset Management" page, click the button:
+   "Reset to Synthetic Demo Dataset"
+
+EXPECTED OUTPUT:
+- Success message: "Synthetic demonstration dataset successfully loaded."
+- Telemetry resets to 112 curated demonstration emails.
+
+================================================================================
+3. MODULE 2: INTELLIGENT PHISHING CLASSIFICATION & MODEL PERFORMANCE
+================================================================================
+PURPOSE:
+Demonstrates ML prediction using TF-IDF + Logistic Regression, confidence scoring,
+risk tier assignment, suspicious keyword detection, URL anomaly extraction, and empirical metrics.
+
+--------------------------------------------------------------------------------
+TEST 2.1: CLASSIFY A HIGH-RISK PHISHING EMAIL
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Email Analysis" in the left sidebar.
+2. In the "Inbound Email Inspector" form, paste the following exact inputs:
+
+--- INPUT BEGIN ---
+Sender Email Address : security-alert@chase-verification-center.xyz
+Email Subject        : URGENT: Your bank account access has been restricted!
+Email Body Content   :
+Dear customer, your bank account has been suspended due to unauthorized login attempts. You must verify your credentials immediately at http://secure-bank-login.xyz/verify or your account will be permanently locked within 24 hours.
+--- INPUT END ---
+
+3. Click "Analyse Email".
+
+EXPECTED OUTPUT:
+- Model Classification : PHISHING (Red Badge)
+- Risk Level           : HIGH RISK (Red Badge)
+- Confidence           : Approximately 78% - 85%
+- Suspicious Keywords  : urgent, suspended, unauthorized, verify, credentials, bank, locked, 24 hours
+- Extracted Links      : http://secure-bank-login.xyz/verify
+- Link Anomaly Details : Uncommon/untrusted TLD detected (.xyz); Deceptive subdomain detected.
+- Database Confirmation: Record saved to database (#ID will be shown).
+- Automatic Action     : Triggers an automatic high-severity Security Alert in the database.
+
+--------------------------------------------------------------------------------
+TEST 2.2: CLASSIFY A BENIGN LEGITIMATE WORKPLACE EMAIL
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. On the "Email Analysis" page, clear the form and paste the following inputs:
+
+--- INPUT BEGIN ---
+Sender Email Address : sarah.jenkins@company.com
+Email Subject        : Sprint Planning Backlog - Q4 Review
+Email Body Content   :
+Hi Team, attached is the revised sprint backlog for Q4. Please review the Jira tickets assigned to you before tomorrow 10:00 AM standup so we can finalize user stories and sprint milestones.
+--- INPUT END ---
+
+2. Click "Analyse Email".
+
+EXPECTED OUTPUT:
+- Model Classification : LEGITIMATE (Green Badge)
+- Risk Level           : LOW RISK (or MEDIUM if confidence is below 75%)
+- Confidence           : Approximately 70% - 80%
+- Suspicious Keywords  : None detected (Standard workplace vocabulary)
+- Extracted Links      : None detected
+- Database Confirmation: Record saved to database.
+
+--------------------------------------------------------------------------------
+TEST 2.3: TEST ONE-CLICK DEMONSTRATION PRESETS
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. At the top of the "Email Analysis" page, test the four one-click preset buttons:
+   - Preset 1: "Bank Account Suspension" -> Classifies as PHISHING (High Risk)
+   - Preset 2: "Sprint Backlog Review"   -> Classifies as LEGITIMATE (Low Risk)
+   - Preset 3: "Crypto Airdrop Scam"     -> Classifies as PHISHING (High Risk)
+   - Preset 4: "Library Book Due"        -> Classifies as LEGITIMATE (Low Risk)
+
+--------------------------------------------------------------------------------
+TEST 2.4: VERIFY MODEL EVALUATION METRICS & CONFUSION MATRIX
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Model Performance" in the left sidebar.
+2. Review the empirical metrics computed strictly on the held-out test split (28 unseen emails).
+
+EXPECTED OUTPUT:
+- Test Accuracy       : 92.86%
+- Precision           : 87.50%
+- Recall (Sensitivity): 100.00% (All phishing test emails successfully caught)
+- F1-Score            : 93.33%
+- Empirical Confusion Matrix:
+  * True Negatives  (TN): 12 (Legitimate correctly identified)
+  * False Positives (FP): 2  (Legitimate flagged as phishing)
+  * False Negatives (FN): 0  (Zero phishing emails missed)
+  * True Positives  (TP): 14 (Phishing correctly caught)
+- Train Set Size: 84 records | Test Set Size: 28 records
+3. Click "Retrain Model Now".
+   Observe: The button shows an animated spinner and refreshes the evaluation metrics in real time.
+
+================================================================================
+4. MODULE 3: SENDER AUTHENTICATION & PGP CRYPTOGRAPHY
+================================================================================
+
+--------------------------------------------------------------------------------
+PART A: SENDER AUTHENTICATION ANALYSIS
+--------------------------------------------------------------------------------
+PURPOSE:
+Demonstrates header parsing, Reply-To mismatch detection, brand typosquatting checks,
+and SPF/DKIM/DMARC evaluation with transparent educational disclaimers.
+
+TEST 3.1: SPOOFED PAYPAL EMAIL WITH AUTHENTICATION FAILURE
+PROCEDURE:
+1. Click "Sender Authentication" in the left sidebar.
+2. In the "Sender Identity & Header Inspector" form, paste the following inputs:
+
+--- INPUT BEGIN ---
+Sender Email Address : billing@paypa1-security.com
+Display Name         : PayPal Official Support
+Reply-To Address     : phisher-drop@attacker-host.top
+Return-Path          : bounce@unverified-mta.online
+Raw Email Headers    :
+Received: from mail.unverified-mta.online (192.168.1.100)
+From: "PayPal Official Support" <billing@paypa1-security.com>
+Reply-To: phisher-drop@attacker-host.top
+Return-Path: <bounce@unverified-mta.online>
+Authentication-Results: mx.google.com; spf=fail (google.com: domain of billing@paypa1-security.com does not designate 192.168.1.100 as permitted sender); dkim=fail; dmarc=fail action=quarantine
+--- INPUT END ---
+
+3. Click "Analyse Sender Authenticity".
+
+EXPECTED OUTPUT:
+- Sender Authenticity Verdict: HIGH SENDER RISK (Red Badge)
+- Risk Score                 : 85+ / 100
+- Protocol Status Badges     :
+  * SPF Status   : FAIL (Red Badge)
+  * DKIM Status  : FAIL (Red Badge)
+  * DMARC Status : FAIL (Red Badge)
+- Identity Alignment Warnings:
+  * "Sender domain (paypa1-security.com) does not match Reply-To domain (attacker-host.top). Replies will be routed to a different destination."
+  * "Domain 'paypa1-security.com' appears to be a lookalike / typosquatting domain imitating PayPal."
+  * "Sender domain does not match Return-Path domain."
+- Educational Disclaimer:
+  Explains clearly that these results are parsed from supplied headers rather than live DNS TXT queries.
+
+--------------------------------------------------------------------------------
+TEST 3.2: LEGITIMATE CORPORATE EMAIL (ALIGNED SENDER)
+PROCEDURE:
+1. On the "Sender Authentication" page, click the preset button at the top:
+   "Legitimate Corporate Communication"
+2. Click "Analyse Sender Authenticity".
+
+EXPECTED OUTPUT:
+- Sender Authenticity Verdict: LOW SENDER RISK (Green Badge)
+- Risk Score                 : 0 / 100
+- SPF Status: PASS | DKIM Status: PASS | DMARC Status: PASS
+- Identity Alignment: "Sender domains and return path are aligned. No deceptive flags detected."
+
+--------------------------------------------------------------------------------
+PART B: PGP SECURE COMMUNICATION & CRYPTOGRAPHIC INTEGRITY
+--------------------------------------------------------------------------------
+PURPOSE:
+Demonstrates dual-engine asymmetric cryptography (Native GnuPG + Python Cryptography RSA-2048),
+key generation, message encryption, decryption with passphrase, digital signing, and SHA-256 integrity.
+
+TEST 3.3: ASYMMETRIC KEY GENERATION (SUB-TAB 1)
+PROCEDURE:
+1. Click "PGP & Cryptography" in the left sidebar.
+2. Select Sub-Tab "1. Key Generation & Management".
+3. Enter the following inputs:
+   - Full Name / Key ID : Alice Security Officer
+   - Email Address      : alice@freshai.org
+   - Passphrase         : Capstone2026!
+4. Click "Generate Keypair".
+
+EXPECTED OUTPUT:
+- Public Key box populates with ASCII-armored RSA Public Key:
+  "-----BEGIN PUBLIC KEY----- ... -----END PUBLIC KEY-----"
+- Private Key box populates with encrypted Private Key:
+  "-----BEGIN ENCRYPTED PRIVATE KEY----- ... -----END ENCRYPTED PRIVATE KEY-----"
+- Security Notice: Private keys and passphrases are never stored in the database.
+- Click "Copy Public Key" and "Copy Private Key" to verify clipboard integration.
+
+--------------------------------------------------------------------------------
+TEST 3.4: ASYMMETRIC ENCRYPTION (SUB-TAB 2)
+PROCEDURE:
+1. Click Sub-Tab "2. Asymmetric Encryption".
+2. In "Plaintext Secret Message", paste:
+
+--- INPUT BEGIN ---
+Confidential Security Intel: Final-Year Capstone Project defense is scheduled for Room 301 at 10:00 AM.
+--- INPUT END ---
+
+3. The Recipient's Public Key will already be pre-filled from Test 3.3 (or paste Alice's public key).
+4. Click "Encrypt Message with Public Key".
+
+EXPECTED OUTPUT:
+- Armored Ciphertext box populates with:
+  "-----BEGIN FRESH AI ENCRYPTED MESSAGE-----
+   Version: FRESH AI PGP/RSA Security v1.0
+   Chunks: 1
+   [Base64 Encrypted Ciphertext Blocks]
+   -----END FRESH AI ENCRYPTED MESSAGE-----"
+- Message is now cryptographically secured using RSA-OAEP with SHA-256.
+
+--------------------------------------------------------------------------------
+TEST 3.5: MESSAGE DECRYPTION (SUB-TAB 3)
+PROCEDURE:
+1. Click Sub-Tab "3. Message Decryption".
+2. The ciphertext and Alice's private key will already be pre-filled.
+3. In "Private Key Passphrase", enter:
+   Capstone2026!
+4. Click "Decrypt Message".
+
+EXPECTED OUTPUT:
+- Decrypted Original Message box displays:
+  "Confidential Security Intel: Final-Year Capstone Project defense is scheduled for Room 301 at 10:00 AM."
+
+ERROR HANDLING TEST (Wrong Passphrase):
+5. Change the passphrase to "WrongPassword" and click "Decrypt Message".
+EXPECTED OUTPUT:
+- Red alert box appears: "Failed to load private key. Ensure the key and passphrase are correct."
+(Proves proper error handling without exposing passphrases).
+
+--------------------------------------------------------------------------------
+TEST 3.6: DIGITAL SIGNATURE & VERIFICATION (SUB-TAB 4)
+PROCEDURE:
+1. Click Sub-Tab "4. Digital Signature & Verification".
+2. In "Message to Sign", enter:
+   "Official Security Bulletin: Critical patch deployed to production nodes."
+3. Click "Digitally Sign Message".
+4. Observe the generated armored signed message:
+   "-----BEGIN FRESH AI SIGNED MESSAGE-----
+    Hash: SHA256
+    ...
+    -----BEGIN FRESH AI SIGNATURE-----
+    [Base64 Signature]
+    -----END FRESH AI SIGNATURE-----"
+5. Click "Verify Signature Integrity".
+
+EXPECTED OUTPUT:
+- Verification Status: SIGNATURE_VERIFIED_VALID (Green box)
+- "Cryptographic RSA-PSS signature verified successfully. The message has not been altered."
+
+TAMPERING TEST:
+6. Modify one character inside the signed message text and click "Verify Signature Integrity".
+EXPECTED OUTPUT:
+- Verification Status: SIGNATURE_INVALID_OR_TAMPERED (Red box)
+- "Signature verification failed! The message may have been modified."
+
+--------------------------------------------------------------------------------
+TEST 3.7: CRYPTOGRAPHIC SHA-256 INTEGRITY CHECKER (SUB-TAB 5)
+PROCEDURE:
+1. Click Sub-Tab "5. SHA-256 Integrity Checker".
+2. In "Content / Message to Hash", paste:
+   Security Audit Payload 2026
+3. In "Expected SHA-256 Hash Digest", paste:
+   64197e42d7a96570973a901ddc17670cb2687bf4c794ce12a44ea2d790e660fa
+4. Click "Compute SHA-256 Hash Digest".
+
+EXPECTED OUTPUT:
+- Computed SHA-256 Digest matches expected digest.
+- Green status: "Integrity Verified: Expected and computed hashes match perfectly!"
+- If you alter any letter in the content, it triggers "Integrity Failure: Hashes do not match!"
+
+================================================================================
+5. MODULE 4: THREAT EXPLANATION & ALERT DASHBOARD
+================================================================================
+
+--------------------------------------------------------------------------------
+TEST 4.1: EXPLAINABLE AI (XAI) THREAT DIAGNOSTICS
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Threat Explanation" in the left sidebar.
+2. In the top dropdown, select the Chase Bank email you analyzed in Test 2.1.
+
+EXPECTED OUTPUT:
+- Verdict Banner       : PHISHING • HIGH RISK • Confidence ~80%
+- Email Content Snippet: Displays the analyzed email body.
+- Machine Learning Diagnostic Synthesis:
+  * Explains the exact reason the model classified the message as phishing.
+  * Highlights top lexical drivers with contribution weights (e.g. 'verify', 'suspended', 'credentials').
+  * Flags urgency keywords and deceptive links.
+- IoC Summary: Lists all suspicious keywords and extracted hyperlinks.
+- Educational Disclaimer: Reminds analysts that lexical signals are diagnostic aids.
+
+--------------------------------------------------------------------------------
+TEST 4.2: SECURITY INCIDENT ALERTS MANAGEMENT
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Security Alerts" in the left sidebar.
+2. Review the incident alert generated during Test 2.1 (Chase Bank Phishing).
+3. Test Severity Filtering:
+   - Change Severity dropdown from "All Severities" to "HIGH" or "CRITICAL".
+   - Only high-priority incidents will be shown.
+4. Test Triage Status:
+   - On an alert with status "NEW", click the green "Review" button.
+   - Observe: Status immediately transitions to "REVIEWED".
+5. Test Deletion Confirmation:
+   - Click the red trash icon on an alert.
+   - Observe: A confirmation modal appears: "Are you sure you want to permanently delete alert #...?"
+   - Click "Delete Alert". Record is deleted from SQLite.
+
+--------------------------------------------------------------------------------
+TEST 4.3: EMAIL ANALYSIS AUDIT TRAIL (HISTORY)
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Analysis History" in the left sidebar.
+2. Test Live Search:
+   - In the search bar, type: "Chase"
+   - Observe: Only records containing "Chase" in sender, subject, or body are displayed.
+3. Test Risk Filtering:
+   - Select "Risk Level: High Risk" to view only critical threats.
+4. Click the "Explain" button next to any row.
+   Observe: You are immediately taken to the Explainable AI page for that record.
+
+--------------------------------------------------------------------------------
+TEST 4.4: MAIN DASHBOARD TELEMETRY SYNCHRONIZATION
+--------------------------------------------------------------------------------
+PROCEDURE:
+1. Click "Main Dashboard" in the left sidebar.
+2. Observe all 5 KPI cards update in real time:
+   - Total Analysed
+   - Phishing Detected
+   - Legitimate Emails
+   - High-Risk Threats
+   - Security Alerts
+3. Observe the Recharts Visualizations:
+   - Detection Class Distribution Donut Chart (shows Phishing vs. Legitimate proportion).
+   - 7-Day Detection Activity Trends Bar Chart (shows daily threat counts).
+4. Check the "Recent Email Analyses" table at the bottom of the dashboard.
+
+================================================================================
+6. SYSTEM SHUTDOWN INSTRUCTIONS
+================================================================================
+When you are done testing:
+
+1. Close the browser window.
+2. Double-click the file named:
+   "stop_project.bat"
+3. The script will terminate the processes running on Port 5000 and Port 5173.
+4. Press any key to close the terminal.
+
+================================================================================
+END OF TESTING GUIDE - FRESH AI CAPSTONE PROJECT
+================================================================================

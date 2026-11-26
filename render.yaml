@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: fresh-ai-email-security
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn --chdir backend run:app"
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: NODE_VERSION
+        value: 20.12.2
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
